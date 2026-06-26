@@ -45,16 +45,18 @@ def apply_style() -> None:
             background: #ffffff;
             border: 1px solid #dfe6dc;
             border-radius: 8px;
-            padding: 16px;
+            padding: 0 16px 16px;
             min-height: 520px;
+            overflow: hidden;
         }
         .rank { color: #2f6f46; font-size: .85rem; font-weight: 800; }
         .region-name { color: #1f2a22; font-size: 1.45rem; font-weight: 850; margin: 4px 0 6px; }
         .region-visual {
             height: 126px;
-            border-radius: 8px;
-            margin: 10px 0 12px;
-            border: 1px solid #dce5d8;
+            border-radius: 0;
+            margin: 0 -16px 14px;
+            border: 0;
+            border-bottom: 1px solid #dce5d8;
             overflow: hidden;
             position: relative;
         }
@@ -203,12 +205,12 @@ def render_recommendation_cards(recommendations: pd.DataFrame) -> None:
     for rank, (_, row) in enumerate(recommendations.iterrows(), start=1):
         with cols[rank - 1]:
             st.markdown('<div class="region-card">', unsafe_allow_html=True)
-            st.markdown(f'<div class="rank">TOP {rank}</div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="region-name">{row["region"]}</div>', unsafe_allow_html=True)
             st.markdown(
                 f'<div class="region-visual {region_visual_class(row["region"])}"></div>',
                 unsafe_allow_html=True,
             )
+            st.markdown(f'<div class="rank">TOP {rank}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="region-name">{row["region"]}</div>', unsafe_allow_html=True)
             st.markdown(f'<div class="score">{row["score"]:.1f}<small> / 100</small></div>', unsafe_allow_html=True)
             st.progress(float(row["score"]) / 100, text="3. 적합도 점수")
             st.markdown(f'<div class="probability">4. 머신러닝 예측 확률: <b>{row["probability"]:.2%}</b></div>', unsafe_allow_html=True)
