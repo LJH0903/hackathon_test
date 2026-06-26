@@ -197,40 +197,8 @@ def apply_design() -> None:
         [data-testid="stSidebar"] { background:#eef3ea; border-right:1px solid var(--line); }
         .block-container { max-width:1180px; padding-top:1.4rem; padding-bottom:3rem; }
         h1, h2, h3, h4, p { letter-spacing:0; }
-        .intro { padding:22px 0 14px; border-bottom:1px solid var(--line); margin-bottom:18px; }
-        .intro h1 { font-size:clamp(2rem,4vw,3.4rem); line-height:1.08; margin:0 0 10px; font-weight:800; }
-        .intro p { max-width:760px; color:var(--muted); line-height:1.65; margin:0; font-size:1.02rem; }
-        .badge { display:inline-block; background:var(--green-soft); color:var(--green); border:1px solid #c9dfcd; border-radius:999px; padding:5px 10px; font-weight:700; font-size:.82rem; margin-bottom:12px; }
-        .summary-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin:18px 0 8px; }
-        .summary-item, .rank-card, .factor-box, .house-card, .policy-card, .chat-shell { background:var(--panel); border:1px solid var(--line); border-radius:8px; box-shadow:0 1px 2px rgba(20,30,20,.04); }
-        .summary-item { padding:14px; }
-        .summary-item span { display:block; color:var(--muted); font-size:.8rem; margin-bottom:4px; }
-        .summary-item b { font-size:1.05rem; }
-        .section-label { margin:26px 0 10px; color:var(--green); font-weight:800; font-size:.95rem; }
-        .rank-card { display:grid; grid-template-columns:36px 1fr 52px; gap:10px; align-items:center; padding:13px; margin-bottom:10px; }
-        .rank-card.primary { border-color:#9fc7a8; background:var(--green-soft); }
-        .rank-no { color:var(--green); font-weight:800; }
-        .rank-name { font-weight:800; }
-        .rank-desc { color:var(--muted); font-size:.82rem; margin-top:2px; }
-        .rank-score { text-align:right; font-weight:800; }
-        .result-note { background:#243528; color:white; border-radius:8px; padding:16px; margin-bottom:12px; line-height:1.55; }
-        .result-note b, .result-note .score { color:#bfe8c5; }
-        .factor-grid, .card-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
-        .card-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
-        .factor-box, .house-card, .policy-card { padding:15px; }
-        .factor-box.good { background:var(--green-soft); }
-        .factor-box.bad { background:var(--red-soft); }
-        .factor-box h4, .house-card h4, .policy-card h4 { margin:0 0 8px; font-size:.98rem; }
-        .factor-box ul { margin:0; padding-left:18px; }
-        .factor-box li { margin:5px 0; }
-        .tag { display:inline-block; border-radius:999px; background:#f3f4f0; color:#4b5563; padding:3px 8px; margin-bottom:8px; font-size:.78rem; font-weight:700; }
-        .price { font-size:1.18rem; font-weight:850; margin-bottom:6px; }
-        .chat-shell { padding:16px; margin-top:12px; }
-        .chat-shell h3 { margin:0 0 6px; font-size:1.05rem; }
-        .chat-shell p { color:var(--muted); margin:0; }
         .stButton > button { border:1px solid var(--line); border-radius:8px; background:white; color:var(--ink); font-weight:700; }
         .stButton > button:hover { border-color:#9fc7a8; color:var(--green); background:var(--green-soft); }
-        @media (max-width:900px) { .summary-grid, .factor-grid, .card-grid { grid-template-columns:1fr; } }
         </style>
         """,
         unsafe_allow_html=True,
@@ -239,36 +207,23 @@ def apply_design() -> None:
 
 def render_intro(recommendations: pd.DataFrame) -> None:
     top = recommendations.iloc[0]
-    st.markdown(
-        f"""
-        <section class="intro">
-            <div class="badge">1박 2일 해커톤 MVP</div>
-            <h1>전남 귀촌 후보지를<br>조건에 맞춰 빠르게 좁혀보세요</h1>
-            <p>
-                예산, 차량 여부, 원격근무 가능성, 농업·스마트팜 관심도를 바탕으로
-                추천 지역 TOP3와 확인해야 할 리스크를 보여줍니다.
-                현재 조건의 1순위는 <b>{top['region']}</b>, 적합도는 <b>{top['score']}점</b>입니다.
-            </p>
-        </section>
-        """,
-        unsafe_allow_html=True,
+    st.title("전남 귀촌 후보지를 조건에 맞춰 빠르게 좁혀보세요")
+    st.write(
+        "예산, 차량 여부, 원격근무 가능성, 농업·스마트팜 관심도를 바탕으로 "
+        "추천 지역 TOP3와 확인해야 할 리스크를 보여줍니다."
     )
+    st.caption(f"현재 조건의 1순위는 {top['region']}, 적합도는 {top['score']}점입니다.")
+    st.divider()
 
 
 def render_profile(profile: dict, top_region: str) -> None:
     car_text = "차량 있음" if profile["has_car"] else "차량 없음"
     remote_text = "원격 가능" if profile["remote_work"] else "원격 어려움"
-    st.markdown(
-        f"""
-        <div class="summary-grid">
-            <div class="summary-item"><span>나이 / 직업</span><b>{profile['age']}세</b><br>{profile['job']}</div>
-            <div class="summary-item"><span>정착 예산</span><b>{profile['budget']:,}만원</b><br>주택·수리 기준</div>
-            <div class="summary-item"><span>이동 / 근무</span><b>{car_text}</b><br>{remote_text}</div>
-            <div class="summary-item"><span>현재 1순위</span><b>{top_region}</b><br>추천 TOP3 기준</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    cols = st.columns(4)
+    cols[0].metric("나이", f"{profile['age']}세", profile["job"])
+    cols[1].metric("정착 예산", f"{profile['budget']:,}만원", "주택·수리 기준")
+    cols[2].metric("이동 / 근무", car_text, remote_text)
+    cols[3].metric("현재 1순위", top_region, "추천 TOP3 기준")
 
 
 def render_recommendations(recommendations: pd.DataFrame) -> str:
@@ -277,10 +232,10 @@ def render_recommendations(recommendations: pd.DataFrame) -> str:
         selected_region = recommendations.iloc[0]["region"]
     selected = recommendations[recommendations["region"] == selected_region].iloc[0]
 
-    st.markdown('<div class="section-label">추천 결과</div>', unsafe_allow_html=True)
+    st.subheader("추천 결과")
     rank_col, detail_col = st.columns([0.9, 1.6], gap="large")
     with rank_col:
-        st.markdown("### TOP 3 지역")
+        st.markdown("#### TOP 3 지역")
         for rank, (_, region) in enumerate(recommendations.iterrows(), start=1):
             if st.button(
                 f"{rank}위 · {region['region']} · {region['score']}점",
@@ -289,35 +244,25 @@ def render_recommendations(recommendations: pd.DataFrame) -> str:
             ):
                 st.session_state["selected_region"] = region["region"]
                 st.rerun()
-            card_class = "rank-card primary" if selected_region == region["region"] else "rank-card"
-            desc = "선택된 지역" if selected_region == region["region"] else region["description"]
-            st.markdown(
-                f"""
-                <div class="{card_class}">
-                    <div class="rank-no">{rank}</div>
-                    <div><div class="rank-name">{region['region']}</div><div class="rank-desc">{desc}</div></div>
-                    <div class="rank-score">{region['score']}</div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+            marker = "선택됨" if selected_region == region["region"] else region["description"]
+            with st.container(border=True):
+                st.write(f"**{rank}. {region['region']}**")
+                st.caption(marker)
+                st.metric("적합도", f"{region['score']}점")
 
     with detail_col:
-        good_items = "".join(f"<li>{item}</li>" for item in selected["pros"])
-        bad_items = "".join(f"<li>{item}</li>" for item in selected["cons"])
-        st.markdown(
-            f"""
-            <div class="result-note">
-                <b>{selected['region']}</b>은 현재 조건에서
-                <span class="score">{selected['score']}점</span>입니다. {selected['description']}
-            </div>
-            <div class="factor-grid">
-                <div class="factor-box good"><h4>잘 맞는 이유</h4><ul>{good_items}</ul></div>
-                <div class="factor-box bad"><h4>확인할 점</h4><ul>{bad_items}</ul></div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        st.info(f"{selected['region']}은 현재 조건에서 {selected['score']}점입니다. {selected['description']}")
+        good_col, bad_col = st.columns(2)
+        with good_col:
+            with st.container(border=True):
+                st.markdown("#### 잘 맞는 이유")
+                for item in selected["pros"]:
+                    st.write(f"- {item}")
+        with bad_col:
+            with st.container(border=True):
+                st.markdown("#### 확인할 점")
+                for item in selected["cons"]:
+                    st.write(f"- {item}")
     return selected_region
 
 
@@ -325,59 +270,42 @@ def render_house_cards(houses: pd.DataFrame, region: str, budget: int) -> None:
     region_houses = houses[houses["region"] == region].copy()
     region_houses["budget_gap"] = budget - region_houses["price"]
     region_houses = region_houses.sort_values(["budget_gap", "price"], ascending=[False, True]).head(3)
-    st.markdown('<div class="section-label">주택 후보</div>', unsafe_allow_html=True)
-    cards = []
-    for _, house in region_houses.iterrows():
+    st.subheader("주택 후보")
+    cols = st.columns(3)
+    for col, (_, house) in zip(cols, region_houses.iterrows()):
         budget_note = "예산 안" if house["price"] <= budget else "예산 초과"
-        cards.append(
-            f"""
-            <div class="house-card">
-                <div class="tag">{house['tag']}</div>
-                <h4>{house['title']}</h4>
-                <div class="price">{house['price']:,}만원</div>
-                <p>{house['area']} · {house['condition']} · {budget_note}</p>
-            </div>
-            """
-        )
-    st.markdown(f'<div class="card-grid">{"".join(cards)}</div>', unsafe_allow_html=True)
+        with col:
+            with st.container(border=True):
+                st.caption(house["tag"])
+                st.markdown(f"#### {house['title']}")
+                st.metric("가격", f"{house['price']:,}만원", budget_note)
+                st.write(f"{house['area']} · {house['condition']}")
 
 
 def render_policy_cards(policies: pd.DataFrame, region: str) -> None:
     matched = policies[(policies["region"] == "공통") | (policies["region"] == region)].head(3)
-    cards = [
-        f"""
-        <div class="policy-card">
-            <div class="tag">{row['region']}</div>
-            <h4>{row['policy']}</h4>
-            <p>{row['summary']}</p>
-        </div>
-        """
-        for _, row in matched.iterrows()
-    ]
-    st.markdown('<div class="section-label">정책 연결</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="card-grid">{"".join(cards)}</div>', unsafe_allow_html=True)
+    st.subheader("정책 연결")
+    cols = st.columns(3)
+    for col, (_, row) in zip(cols, matched.iterrows()):
+        with col:
+            with st.container(border=True):
+                st.caption(row["region"])
+                st.markdown(f"#### {row['policy']}")
+                st.write(row["summary"])
 
 
 def render_chatbot(selected_region: str, profile: dict, recommendations: pd.DataFrame) -> None:
-    st.markdown('<div class="section-label">상담 시뮬레이션</div>', unsafe_allow_html=True)
-    st.markdown(
-        """
-        <div class="chat-shell">
-            <h3>귀촌 준비 질문</h3>
-            <p>해커톤 버전에서는 규칙 기반 답변으로 구현하고, 이후 Claude API 연결 영역으로 확장할 수 있습니다.</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    with st.popover("상담", icon=":material/chat:", use_container_width=False):
+        st.markdown("#### 귀촌 준비 질문")
+        st.caption("규칙 기반 답변으로 구현한 상담 시뮬레이션입니다.")
 
-    if "chat_messages" not in st.session_state:
-        st.session_state["chat_messages"] = [
-            {"role": "assistant", "content": f"{selected_region} 기준으로 예산, 빈집, 농업 아이템, 정책 지원을 질문해보세요."}
-        ]
+        if "chat_messages" not in st.session_state:
+            st.session_state["chat_messages"] = [
+                {"role": "assistant", "content": f"{selected_region} 기준으로 예산, 빈집, 농업 아이템, 정책 지원을 질문해보세요."}
+            ]
 
-    quick_prompts = ["정착 로드맵 알려줘", "예산은 어떻게 나눌까?", "빈집 볼 때 확인할 점", "농업 아이템 추천", "정책 지원 알려줘"]
-    for col, prompt in zip(st.columns(5), quick_prompts):
-        with col:
+        quick_prompts = ["정착 로드맵", "예산 점검", "빈집 체크", "농업 아이템", "정책 지원"]
+        for prompt in quick_prompts:
             if st.button(prompt, key=f"quick-{prompt}", use_container_width=True):
                 st.session_state["chat_messages"].append({"role": "user", "content": prompt})
                 st.session_state["chat_messages"].append(
@@ -385,17 +313,17 @@ def render_chatbot(selected_region: str, profile: dict, recommendations: pd.Data
                 )
                 st.rerun()
 
-    for message in st.session_state["chat_messages"]:
-        with st.chat_message(message["role"]):
-            st.write(message["content"])
+        for message in st.session_state["chat_messages"][-6:]:
+            with st.chat_message(message["role"]):
+                st.write(message["content"])
 
-    user_message = st.chat_input("예: 고흥군에서 스마트팜으로 시작하려면?")
-    if user_message:
-        st.session_state["chat_messages"].append({"role": "user", "content": user_message})
-        st.session_state["chat_messages"].append(
-            {"role": "assistant", "content": make_ai_reply(user_message, selected_region, profile, recommendations)}
-        )
-        st.rerun()
+        user_message = st.text_input("질문 입력", placeholder="예: 고흥군에서 스마트팜으로 시작하려면?")
+        if st.button("질문하기", key="ask-chatbot", use_container_width=True) and user_message:
+            st.session_state["chat_messages"].append({"role": "user", "content": user_message})
+            st.session_state["chat_messages"].append(
+                {"role": "assistant", "content": make_ai_reply(user_message, selected_region, profile, recommendations)}
+            )
+            st.rerun()
 
 
 def main() -> None:
@@ -430,12 +358,16 @@ def main() -> None:
     recommendations = build_recommendations(regions, profile)
     top_region = recommendations.iloc[0]["region"]
 
+    chat_region = st.session_state.get("selected_region", top_region)
+    if chat_region not in recommendations["region"].tolist():
+        chat_region = top_region
+
     render_intro(recommendations)
+    render_chatbot(chat_region, profile, recommendations)
     render_profile(profile, top_region)
     selected_region = render_recommendations(recommendations)
     render_house_cards(houses, selected_region, budget)
     render_policy_cards(policies, selected_region)
-    render_chatbot(selected_region, profile, recommendations)
 
 
 if __name__ == "__main__":
