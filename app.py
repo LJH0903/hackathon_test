@@ -353,8 +353,28 @@ def apply_design() -> None:
             color:#46524a;
         }
         div[data-testid="stPopoverBody"] {
-            max-height:620px;
+            width:min(560px, calc(100vw - 32px));
+            max-height:720px;
             overflow:hidden;
+        }
+        div[data-testid="stPopoverBody"] div[data-testid="stHorizontalBlock"] {
+            gap:6px;
+        }
+        div[data-testid="stPopoverBody"] div[data-testid="stButton"] button {
+            min-height:30px;
+            height:30px;
+            padding:2px 8px !important;
+            font-size:.78rem;
+            border-radius:999px;
+        }
+        div[data-testid="stPopoverBody"] div[data-testid="stButton"]:last-of-type button {
+            min-height:38px;
+            height:38px;
+            border-radius:8px;
+            font-size:.9rem;
+        }
+        div[data-testid="stPopoverBody"] div[data-testid="stChatMessage"] {
+            padding:.45rem .65rem;
         }
         .stButton > button { border:1px solid var(--line); border-radius:8px; background:white; color:var(--ink); font-weight:700; }
         .stButton > button:hover { border-color:#9fc7a8; color:var(--green); background:var(--green-soft); }
@@ -501,27 +521,27 @@ def render_policy_cards(policies: pd.DataFrame, region: str) -> None:
 
 def render_chatbot(selected_region: str, profile: dict, recommendations: pd.DataFrame) -> None:
     with st.popover("AI", icon=":material/smart_toy:", use_container_width=False):
-        st.markdown("#### 귀촌 준비 질문")
-        st.caption("규칙 기반 답변으로 구현한 상담 시뮬레이션입니다.")
-
         if "chat_messages" not in st.session_state:
             st.session_state["chat_messages"] = [
                 {"role": "assistant", "content": f"{selected_region} 기준으로 예산, 빈집, 농업 아이템, 정책 지원을 질문해보세요."}
             ]
 
-        quick_prompts = ["정착 로드맵", "예산 점검", "빈집 체크", "농업 아이템", "정책 지원"]
-        for prompt in quick_prompts:
-            if st.button(prompt, key=f"quick-{prompt}", use_container_width=True):
-                st.session_state["chat_messages"].append({"role": "user", "content": prompt})
-                st.session_state["chat_messages"].append(
-                    {"role": "assistant", "content": make_ai_reply(prompt, selected_region, profile, recommendations)}
-                )
-                st.rerun()
-
-        with st.container(height=280, border=True):
+        st.markdown("#### AI 상담")
+        with st.container(height=420, border=True):
             for message in st.session_state["chat_messages"]:
                 with st.chat_message(message["role"]):
                     st.write(message["content"])
+
+        quick_prompts = ["예산", "빈집", "정책"]
+        quick_cols = st.columns(len(quick_prompts))
+        for col, prompt in zip(quick_cols, quick_prompts):
+            with col:
+                if st.button(prompt, key=f"quick-{prompt}", use_container_width=True):
+                    st.session_state["chat_messages"].append({"role": "user", "content": prompt})
+                    st.session_state["chat_messages"].append(
+                        {"role": "assistant", "content": make_ai_reply(prompt, selected_region, profile, recommendations)}
+                    )
+                    st.rerun()
 
         user_message = st.text_input("질문 입력", placeholder="예: 고흥군에서 스마트팜으로 시작하려면?")
         if st.button("질문하기", key="ask-chatbot", use_container_width=True) and user_message:
