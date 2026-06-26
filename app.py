@@ -1,5 +1,7 @@
 ﻿from __future__ import annotations
 
+from textwrap import dedent
+
 import pandas as pd
 import streamlit as st
 
@@ -197,14 +199,16 @@ def render_policy(policy: dict) -> None:
 
 
 def policy_html(policy: dict) -> str:
-    return f"""
-    <div class="policy-box">
-        <div class="policy-title">{policy.get('policy_name')}</div>
-        <div class="muted">{policy.get('category')} · {policy.get('target')}</div>
-        <div class="muted">{policy.get('benefit')}</div>
-        <div class="muted">{policy.get('apply_url')}</div>
-    </div>
-    """
+    return dedent(
+        f"""
+        <div class="policy-box">
+            <div class="policy-title">{policy.get('policy_name')}</div>
+            <div class="muted">{policy.get('category')} · {policy.get('target')}</div>
+            <div class="muted">{policy.get('benefit')}</div>
+            <div class="muted">{policy.get('apply_url')}</div>
+        </div>
+        """
+    ).strip()
 
 
 def region_visual_class(region: str) -> str:
@@ -230,28 +234,24 @@ def render_recommendation_cards(recommendations: pd.DataFrame) -> None:
         with cols[rank - 1]:
             policies = "".join(policy_html(policy) for policy in row["related_policies"])
             score = float(row["score"])
-            st.markdown(
-                f"""
-                <div class="region-card">
-                    <div class="region-visual {region_visual_class(row['region'])}"></div>
-                    <div class="rank">TOP {rank}</div>
-                    <div class="region-name">{row['region']}</div>
-                    <div class="score">{score:.1f}<small> / 100</small></div>
-                    <div class="muted">3. 적합도 점수</div>
-                    <div class="progress-track"><div class="progress-fill" style="width:{score}%;"></div></div>
-                    <div class="probability">4. 머신러닝 예측 확률: <b>{row['probability']:.2%}</b></div>
-                    <div class="section-label">5. 추천 이유</div>
-                    <div class="muted">{row['matched_reason']}</div>
-                    <div class="section-label">6. 주의사항</div>
-                    <div class="muted">{row['risk_note']}</div>
-                    <div class="section-label">지역 설명</div>
-                    <div class="muted">{row['description']}</div>
-                    <div class="section-label">7. 연결 가능한 지원정책</div>
-                    {policies}
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+            card_html = f"""<div class="region-card">
+<div class="region-visual {region_visual_class(row['region'])}"></div>
+<div class="rank">TOP {rank}</div>
+<div class="region-name">{row['region']}</div>
+<div class="score">{score:.1f}<small> / 100</small></div>
+<div class="muted">3. 적합도 점수</div>
+<div class="progress-track"><div class="progress-fill" style="width:{score}%;"></div></div>
+<div class="probability">4. 머신러닝 예측 확률: <b>{row['probability']:.2%}</b></div>
+<div class="section-label">5. 추천 이유</div>
+<div class="muted">{row['matched_reason']}</div>
+<div class="section-label">6. 주의사항</div>
+<div class="muted">{row['risk_note']}</div>
+<div class="section-label">지역 설명</div>
+<div class="muted">{row['description']}</div>
+<div class="section-label">7. 연결 가능한 지원정책</div>
+{policies}
+</div>"""
+            st.markdown(card_html, unsafe_allow_html=True)
 
 
 def render_ai_analysis(profile: dict, recommendations: pd.DataFrame) -> None:
