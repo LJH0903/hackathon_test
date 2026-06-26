@@ -2,12 +2,15 @@
 
 import os
 
-from dotenv import load_dotenv
-
 from prompt import SYSTEM_PROMPT, build_prompt
 
 
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ModuleNotFoundError:
+    pass
 
 
 def _as_records(top_regions) -> list[dict]:
