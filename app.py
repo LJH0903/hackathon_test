@@ -80,6 +80,19 @@ def apply_style() -> None:
         .visual-gokseong { background: linear-gradient(160deg, #6c9554 0 30%, #d2c36f 30% 44%, #83b9d2 44% 100%); }
         .score { color: #1f2a22; font-size: 1.9rem; font-weight: 850; }
         .score small { color: #6f7a6d; font-size: .9rem; font-weight: 500; }
+        .progress-track {
+            height: 10px;
+            background: #e8efe4;
+            border-radius: 999px;
+            overflow: hidden;
+            margin: 8px 0 10px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #3f8f5f;
+            border-radius: 999px;
+        }
+        .section-label { font-weight: 750; color: #243528; margin-top: 10px; }
         .probability { color: #4f5a50; font-size: .9rem; margin-bottom: 10px; }
         .policy-box {
             background: #f7faf6;
@@ -183,6 +196,17 @@ def render_policy(policy: dict) -> None:
     )
 
 
+def policy_html(policy: dict) -> str:
+    return f"""
+    <div class="policy-box">
+        <div class="policy-title">{policy.get('policy_name')}</div>
+        <div class="muted">{policy.get('category')} · {policy.get('target')}</div>
+        <div class="muted">{policy.get('benefit')}</div>
+        <div class="muted">{policy.get('apply_url')}</div>
+    </div>
+    """
+
+
 def region_visual_class(region: str) -> str:
     visual_map = {
         "나주": "visual-naju",
@@ -204,26 +228,30 @@ def render_recommendation_cards(recommendations: pd.DataFrame) -> None:
     cols = st.columns(3)
     for rank, (_, row) in enumerate(recommendations.iterrows(), start=1):
         with cols[rank - 1]:
-            st.markdown('<div class="region-card">', unsafe_allow_html=True)
+            policies = "".join(policy_html(policy) for policy in row["related_policies"])
+            score = float(row["score"])
             st.markdown(
-                f'<div class="region-visual {region_visual_class(row["region"])}"></div>',
+                f"""
+                <div class="region-card">
+                    <div class="region-visual {region_visual_class(row['region'])}"></div>
+                    <div class="rank">TOP {rank}</div>
+                    <div class="region-name">{row['region']}</div>
+                    <div class="score">{score:.1f}<small> / 100</small></div>
+                    <div class="muted">3. 적합도 점수</div>
+                    <div class="progress-track"><div class="progress-fill" style="width:{score}%;"></div></div>
+                    <div class="probability">4. 머신러닝 예측 확률: <b>{row['probability']:.2%}</b></div>
+                    <div class="section-label">5. 추천 이유</div>
+                    <div class="muted">{row['matched_reason']}</div>
+                    <div class="section-label">6. 주의사항</div>
+                    <div class="muted">{row['risk_note']}</div>
+                    <div class="section-label">지역 설명</div>
+                    <div class="muted">{row['description']}</div>
+                    <div class="section-label">7. 연결 가능한 지원정책</div>
+                    {policies}
+                </div>
+                """,
                 unsafe_allow_html=True,
             )
-            st.markdown(f'<div class="rank">TOP {rank}</div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="region-name">{row["region"]}</div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="score">{row["score"]:.1f}<small> / 100</small></div>', unsafe_allow_html=True)
-            st.progress(float(row["score"]) / 100, text="3. 적합도 점수")
-            st.markdown(f'<div class="probability">4. 머신러닝 예측 확률: <b>{row["probability"]:.2%}</b></div>', unsafe_allow_html=True)
-            st.markdown("**5. 추천 이유**")
-            st.write(row["matched_reason"])
-            st.markdown("**6. 주의사항**")
-            st.write(row["risk_note"])
-            st.markdown("**지역 설명**")
-            st.write(row["description"])
-            st.markdown("**7. 연결 가능한 지원정책**")
-            for policy in row["related_policies"]:
-                render_policy(policy)
-            st.markdown("</div>", unsafe_allow_html=True)
 
 
 def render_ai_analysis(profile: dict, recommendations: pd.DataFrame) -> None:
