@@ -50,6 +50,32 @@ def apply_style() -> None:
         }
         .rank { color: #2f6f46; font-size: .85rem; font-weight: 800; }
         .region-name { color: #1f2a22; font-size: 1.45rem; font-weight: 850; margin: 4px 0 6px; }
+        .region-visual {
+            height: 126px;
+            border-radius: 8px;
+            margin: 10px 0 12px;
+            border: 1px solid #dce5d8;
+            overflow: hidden;
+            position: relative;
+        }
+        .region-visual::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(180deg, rgba(255,255,255,.12), rgba(20,45,26,.08)),
+                repeating-linear-gradient(110deg, rgba(255,255,255,.16) 0 2px, transparent 2px 15px);
+        }
+        .visual-naju { background: linear-gradient(0deg, #78ad63 0 32%, #d3bf66 32% 42%, #8ec4dc 42% 100%); }
+        .visual-damyang { background: repeating-linear-gradient(95deg, rgba(42,92,45,.9) 0 7px, transparent 7px 20px), linear-gradient(145deg, #dff0b0, #72a85f); }
+        .visual-jangseong { background: radial-gradient(circle at 24% 68%, #5d9b58 0 18%, transparent 19%), radial-gradient(circle at 76% 62%, #6da867 0 20%, transparent 21%), linear-gradient(180deg, #acd5ee 0 52%, #d9c77d 52%); }
+        .visual-goheung { background: linear-gradient(0deg, #4f9158 0 28%, #71a968 28% 42%, #76b7c9 42% 68%, #b9e0ee 68% 100%); }
+        .visual-haenam { background: repeating-linear-gradient(0deg, rgba(76,132,55,.28) 0 8px, transparent 8px 18px), linear-gradient(140deg, #e4cf73, #6fa75d 58%, #b2dff0); }
+        .visual-gangjin { background: radial-gradient(circle at 35% 44%, #6aa15b 0 16%, transparent 17%), linear-gradient(0deg, #78a86a 0 34%, #c5b06c 34% 46%, #9ed0e7 46%); }
+        .visual-boseong { background: repeating-linear-gradient(105deg, rgba(48,113,54,.85) 0 5px, rgba(108,158,75,.85) 5px 12px), linear-gradient(160deg, #b9de87, #3f7e4e); }
+        .visual-yeongam { background: linear-gradient(135deg, #776d59 0 28%, #a4be70 28% 64%, #d7e9a7 64% 100%); }
+        .visual-hwasun { background: radial-gradient(circle at 25% 52%, #7fac6b 0 18%, transparent 19%), linear-gradient(180deg, #a9d3ed 0 50%, #8fbf72 50% 100%); }
+        .visual-gokseong { background: linear-gradient(160deg, #6c9554 0 30%, #d2c36f 30% 44%, #83b9d2 44% 100%); }
         .score { color: #1f2a22; font-size: 1.9rem; font-weight: 850; }
         .score small { color: #6f7a6d; font-size: .9rem; font-weight: 500; }
         .probability { color: #4f5a50; font-size: .9rem; margin-bottom: 10px; }
@@ -155,6 +181,22 @@ def render_policy(policy: dict) -> None:
     )
 
 
+def region_visual_class(region: str) -> str:
+    visual_map = {
+        "나주": "visual-naju",
+        "담양": "visual-damyang",
+        "장성": "visual-jangseong",
+        "고흥": "visual-goheung",
+        "해남": "visual-haenam",
+        "강진": "visual-gangjin",
+        "보성": "visual-boseong",
+        "영암": "visual-yeongam",
+        "화순": "visual-hwasun",
+        "곡성": "visual-gokseong",
+    }
+    return visual_map.get(region, "visual-naju")
+
+
 def render_recommendation_cards(recommendations: pd.DataFrame) -> None:
     st.subheader("2. 추천 지역 TOP3")
     cols = st.columns(3)
@@ -163,6 +205,10 @@ def render_recommendation_cards(recommendations: pd.DataFrame) -> None:
             st.markdown('<div class="region-card">', unsafe_allow_html=True)
             st.markdown(f'<div class="rank">TOP {rank}</div>', unsafe_allow_html=True)
             st.markdown(f'<div class="region-name">{row["region"]}</div>', unsafe_allow_html=True)
+            st.markdown(
+                f'<div class="region-visual {region_visual_class(row["region"])}"></div>',
+                unsafe_allow_html=True,
+            )
             st.markdown(f'<div class="score">{row["score"]:.1f}<small> / 100</small></div>', unsafe_allow_html=True)
             st.progress(float(row["score"]) / 100, text="3. 적합도 점수")
             st.markdown(f'<div class="probability">4. 머신러닝 예측 확률: <b>{row["probability"]:.2%}</b></div>', unsafe_allow_html=True)
