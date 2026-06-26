@@ -352,6 +352,10 @@ def apply_design() -> None:
             padding-left:18px;
             color:#46524a;
         }
+        div[data-testid="stPopoverBody"] {
+            max-height:620px;
+            overflow:hidden;
+        }
         .stButton > button { border:1px solid var(--line); border-radius:8px; background:white; color:var(--ink); font-weight:700; }
         .stButton > button:hover { border-color:#9fc7a8; color:var(--green); background:var(--green-soft); }
         @media (max-width:900px) {
@@ -514,9 +518,10 @@ def render_chatbot(selected_region: str, profile: dict, recommendations: pd.Data
                 )
                 st.rerun()
 
-        for message in st.session_state["chat_messages"][-6:]:
-            with st.chat_message(message["role"]):
-                st.write(message["content"])
+        with st.container(height=280, border=True):
+            for message in st.session_state["chat_messages"]:
+                with st.chat_message(message["role"]):
+                    st.write(message["content"])
 
         user_message = st.text_input("질문 입력", placeholder="예: 고흥군에서 스마트팜으로 시작하려면?")
         if st.button("질문하기", key="ask-chatbot", use_container_width=True) and user_message:
