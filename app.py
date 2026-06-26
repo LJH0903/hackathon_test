@@ -197,8 +197,167 @@ def apply_design() -> None:
         [data-testid="stSidebar"] { background:#eef3ea; border-right:1px solid var(--line); }
         .block-container { max-width:1180px; padding-top:1.4rem; padding-bottom:3rem; }
         h1, h2, h3, h4, p { letter-spacing:0; }
+        div[data-testid="stPopover"] {
+            position:fixed;
+            right:24px;
+            bottom:24px;
+            z-index:1000;
+            width:58px !important;
+            min-width:58px !important;
+            max-width:58px !important;
+        }
+        button[data-testid="stPopoverButton"] {
+            width:58px !important;
+            min-width:58px !important;
+            height:58px !important;
+            min-height:58px !important;
+            border-radius:999px;
+            background:#243528;
+            color:white;
+            border:1px solid #bfe8c5;
+            box-shadow:0 12px 28px rgba(32,49,38,.28);
+            font-size:0;
+            padding:0 !important;
+        }
+        button[data-testid="stPopoverButton"]:hover {
+            background:#31533b;
+            color:white;
+            border-color:#d8f1dc;
+        }
+        button[data-testid="stPopoverButton"] p {
+            display:none;
+        }
+        button[data-testid="stPopoverButton"] span {
+            font-size:26px;
+            margin:0;
+        }
+        .recommend-title {
+            display:flex;
+            align-items:center;
+            gap:8px;
+            font-weight:800;
+            font-size:1.05rem;
+            margin:24px 0 12px;
+        }
+        .rec-card {
+            min-height:318px;
+            border:1px solid var(--line);
+            border-radius:12px;
+            background:white;
+            padding:16px;
+            box-shadow:0 8px 22px rgba(31,45,34,.08);
+        }
+        .rec-card.selected {
+            border-color:#86b890;
+            box-shadow:0 10px 24px rgba(63,125,88,.18);
+        }
+        .rec-head {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:14px;
+        }
+        .rec-left {
+            display:flex;
+            align-items:center;
+            gap:9px;
+            font-weight:850;
+        }
+        .rank-badge {
+            width:28px;
+            height:28px;
+            border-radius:999px;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            color:white;
+            font-weight:850;
+            font-size:.86rem;
+        }
+        .bookmark {
+            color:#60856a;
+            font-size:1.1rem;
+        }
+        .score-line b {
+            font-size:1.42rem;
+        }
+        .score-line span {
+            color:var(--muted);
+            font-size:.82rem;
+        }
+        .score-track {
+            height:8px;
+            border-radius:999px;
+            background:#eef0eb;
+            overflow:hidden;
+            margin:9px 0 14px;
+        }
+        .score-fill {
+            height:100%;
+            border-radius:999px;
+        }
+        .tag-row {
+            display:flex;
+            gap:6px;
+            flex-wrap:wrap;
+            min-height:27px;
+            margin-bottom:12px;
+        }
+        .rec-tag {
+            border-radius:999px;
+            background:#edf6ee;
+            color:#3f7d58;
+            padding:4px 8px;
+            font-size:.72rem;
+            font-weight:750;
+        }
+        .region-visual {
+            height:96px;
+            border-radius:9px;
+            margin-bottom:12px;
+            background-size:cover;
+            background-position:center;
+        }
+        .visual-naju { background:linear-gradient(165deg, rgba(38,93,126,.08), rgba(38,93,126,.18)), linear-gradient(0deg, #6aa477 0 28%, #a9d0ef 28% 46%, #e8f4fb 46% 100%); }
+        .visual-goheung { background:repeating-linear-gradient(100deg, rgba(41,87,48,.9) 0 5px, transparent 5px 16px), linear-gradient(140deg, #b9d78f, #3f7d58); }
+        .visual-damyang { background:repeating-linear-gradient(95deg, rgba(61,106,47,.85) 0 6px, transparent 6px 18px), linear-gradient(145deg, #eff7c3, #7faf67); }
+        .visual-haenam { background:linear-gradient(0deg, #9ac06d 0 34%, #f1d56b 34% 48%, #b9ddf2 48% 100%); }
+        .visual-suncheon { background:radial-gradient(circle at 28% 65%, #77a86d 0 18%, transparent 19%), linear-gradient(150deg, #d9ecbb, #75a9bf); }
+        .visual-yeongam { background:linear-gradient(150deg, #776b55, #a6bf72 52%, #dcefb8); }
+        .rec-desc {
+            color:#4f5b52;
+            font-size:.86rem;
+            line-height:1.5;
+            min-height:42px;
+            margin:0;
+        }
+        .detail-strip {
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:12px;
+            margin-top:12px;
+        }
+        .detail-box {
+            border:1px solid var(--line);
+            border-radius:10px;
+            background:white;
+            padding:14px;
+        }
+        .detail-box h4 {
+            margin:0 0 8px;
+            font-size:.95rem;
+        }
+        .detail-box ul {
+            margin:0;
+            padding-left:18px;
+            color:#46524a;
+        }
         .stButton > button { border:1px solid var(--line); border-radius:8px; background:white; color:var(--ink); font-weight:700; }
         .stButton > button:hover { border-color:#9fc7a8; color:var(--green); background:var(--green-soft); }
+        @media (max-width:900px) {
+            .detail-strip { grid-template-columns:1fr; }
+            div[data-testid="stPopover"] { right:16px; bottom:16px; }
+        }
         </style>
         """,
         unsafe_allow_html=True,
@@ -226,43 +385,85 @@ def render_profile(profile: dict, top_region: str) -> None:
     cols[3].metric("현재 1순위", top_region, "추천 TOP3 기준")
 
 
+def region_visual_class(region: str) -> str:
+    visual_map = {
+        "나주시": "visual-naju",
+        "고흥군": "visual-goheung",
+        "담양군": "visual-damyang",
+        "해남군": "visual-haenam",
+        "순천시": "visual-suncheon",
+        "영암군": "visual-yeongam",
+    }
+    return visual_map.get(region, "visual-naju")
+
+
+def region_tags(region: pd.Series) -> list[str]:
+    scores = [
+        ("도시접근성", region["infra_score"]),
+        ("생활인프라", region["infra_score"]),
+        ("농업자원", region["farm_score"]),
+        ("자연환경", region["nature_score"]),
+        ("스마트팜", region["smartfarm_score"]),
+        ("원격근무", region["remote_score"]),
+    ]
+    return [label for label, _ in sorted(scores, key=lambda item: item[1], reverse=True)[:3]]
+
+
 def render_recommendations(recommendations: pd.DataFrame) -> str:
     selected_region = st.session_state.get("selected_region", recommendations.iloc[0]["region"])
     if selected_region not in recommendations["region"].tolist():
         selected_region = recommendations.iloc[0]["region"]
     selected = recommendations[recommendations["region"] == selected_region].iloc[0]
 
-    st.subheader("추천 결과")
-    rank_col, detail_col = st.columns([0.9, 1.6], gap="large")
-    with rank_col:
-        st.markdown("#### TOP 3 지역")
-        for rank, (_, region) in enumerate(recommendations.iterrows(), start=1):
-            if st.button(
-                f"{rank}위 · {region['region']} · {region['score']}점",
-                key=f"select-{region['region']}",
-                use_container_width=True,
-            ):
+    st.markdown('<div class="recommend-title">1. 정착지 추천 TOP 3 <span style="color:#97a19a;font-size:.9rem;">ⓘ</span></div>', unsafe_allow_html=True)
+    rank_colors = ["#2ba84a", "#3d7fc2", "#7650c7"]
+    cols = st.columns(3)
+    for rank, (col, (_, region)) in enumerate(zip(cols, recommendations.iterrows()), start=1):
+        color = rank_colors[rank - 1]
+        tags = "".join(f'<span class="rec-tag">#{tag}</span>' for tag in region_tags(region))
+        selected_class = " selected" if selected_region == region["region"] else ""
+        progress_width = max(0, min(100, float(region["score"])))
+        with col:
+            st.markdown(
+                f"""
+                <div class="rec-card{selected_class}">
+                    <div class="rec-head">
+                        <div class="rec-left">
+                            <span class="rank-badge" style="background:{color};">{rank}</span>
+                            <span>{region['region']}</span>
+                        </div>
+                        <span class="bookmark">♡</span>
+                    </div>
+                    <div class="score-line"><b>{region['score']}</b><span>점 /100</span></div>
+                    <div class="score-track"><div class="score-fill" style="width:{progress_width}%;background:{color};"></div></div>
+                    <div class="tag-row">{tags}</div>
+                    <div class="region-visual {region_visual_class(region['region'])}"></div>
+                    <p class="rec-desc">{region['description']}</p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+            if st.button("상세 분석 보기 →", key=f"select-{region['region']}", use_container_width=True):
                 st.session_state["selected_region"] = region["region"]
                 st.rerun()
-            marker = "선택됨" if selected_region == region["region"] else region["description"]
-            with st.container(border=True):
-                st.write(f"**{rank}. {region['region']}**")
-                st.caption(marker)
-                st.metric("적합도", f"{region['score']}점")
 
-    with detail_col:
-        st.info(f"{selected['region']}은 현재 조건에서 {selected['score']}점입니다. {selected['description']}")
-        good_col, bad_col = st.columns(2)
-        with good_col:
-            with st.container(border=True):
-                st.markdown("#### 잘 맞는 이유")
-                for item in selected["pros"]:
-                    st.write(f"- {item}")
-        with bad_col:
-            with st.container(border=True):
-                st.markdown("#### 확인할 점")
-                for item in selected["cons"]:
-                    st.write(f"- {item}")
+    good_items = "".join(f"<li>{item}</li>" for item in selected["pros"][:3])
+    bad_items = "".join(f"<li>{item}</li>" for item in selected["cons"][:3])
+    st.markdown(
+        f"""
+        <div class="detail-strip">
+            <div class="detail-box">
+                <h4>{selected['region']}이 잘 맞는 이유</h4>
+                <ul>{good_items}</ul>
+            </div>
+            <div class="detail-box">
+                <h4>방문 전 확인할 점</h4>
+                <ul>{bad_items}</ul>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
     return selected_region
 
 
@@ -295,7 +496,7 @@ def render_policy_cards(policies: pd.DataFrame, region: str) -> None:
 
 
 def render_chatbot(selected_region: str, profile: dict, recommendations: pd.DataFrame) -> None:
-    with st.popover("상담", icon=":material/chat:", use_container_width=False):
+    with st.popover("AI", icon=":material/smart_toy:", use_container_width=False):
         st.markdown("#### 귀촌 준비 질문")
         st.caption("규칙 기반 답변으로 구현한 상담 시뮬레이션입니다.")
 
